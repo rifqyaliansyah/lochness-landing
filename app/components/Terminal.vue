@@ -238,13 +238,23 @@ const close = () => {
 onMounted(() => {
     showWelcome.value = true
 
-    // Multiple focus attempts dengan interval yang berbeda
+    const homeResult = executeWindowsCommand('home')
+    commandHistory.value.push({
+        command: 'home',
+        output: homeResult
+    })
+
+    nextTick(() => {
+        if (terminalContent.value) {
+            terminalContent.value.scrollTop = terminalContent.value.scrollHeight
+        }
+    })
+
     focusInput()
     setTimeout(() => focusInput(), 100)
     setTimeout(() => focusInput(), 300)
     setTimeout(() => focusInput(), 500)
 
-    // Set interval untuk retry focus setiap 2 detik (useful setelah loading)
     focusInterval = setInterval(() => {
         if (document.activeElement !== commandInput.value) {
             focusInput()

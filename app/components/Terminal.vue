@@ -289,4 +289,10 @@ onMounted(() => {
         opacity: 0;
     }
 }
+
+@media (max-width: 768px) {
+    .title-text {
+        margin-right: 0;
+    }
+}
 </style>

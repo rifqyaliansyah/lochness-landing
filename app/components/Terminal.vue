@@ -12,23 +12,23 @@
 
                 <div v-for="(line, index) in commandHistory" :key="index" class="output-line">
                     <div class="prompt-line">
-                        <span class="prompt">C:\Users\rifqy&gt;</span>
-                        <span class="command">{{ line.command }}</span>
+                        <span class="prompt">C:\Users\rifqy&gt;</span><span class="command">{{ line.command }}</span>
                     </div>
                     <div v-if="line.output" class="command-output" v-html="formatOutput(line.output)"></div>
                 </div>
             </div>
 
             <div class="input-line">
-                <span class="prompt">C:\Users\rifqy&gt;</span>
-                <span class="input-wrapper">
-                    <span class="input-display">{{ currentCommand }}</span>
-                    <span v-if="suggestion" class="suggestion">{{ suggestion }}</span>
+                <span class="prompt">C:\Users\rifqy&gt;</span><span class="input-wrapper">
+                    <span class="input-content">
+                        <span class="input-display">{{ currentCommand }}</span>
+                        <span class="cursor" :class="{ blink: !isTyping }"></span>
+                        <span v-if="suggestion" class="suggestion">{{ suggestion }}</span>
+                    </span>
                     <input v-model="currentCommand" @keydown.enter="executeCommand" @keydown.up="navigateHistory(-1)"
                         @keydown.down="navigateHistory(1)" @keydown.tab.prevent="autocomplete"
                         @keydown.right="acceptSuggestion" @input="handleInput" ref="commandInput" type="text"
                         class="command-input" spellcheck="false" autocomplete="off" />
-                    <span class="cursor" :class="{ blink: !isTyping }"></span>
                 </span>
             </div>
         </div>
@@ -270,13 +270,13 @@ onMounted(() => {
 }
 
 .prompt-line {
-    display: flex;
-    gap: 4px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    word-break: break-all;
 }
 
 .prompt {
     color: #cccccc;
-    white-space: nowrap;
 }
 
 .command {
@@ -292,24 +292,25 @@ onMounted(() => {
 }
 
 .input-line {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    word-break: break-all;
 }
 
 .input-wrapper {
     position: relative;
-    display: flex;
-    align-items: center;
-    flex: 1;
+    display: inline;
+}
+
+.input-content {
+    display: inline;
+    pointer-events: none;
 }
 
 .input-display {
     color: #cccccc;
     font-size: 14px;
     font-family: 'Consolas', 'Courier New', monospace;
-    white-space: pre;
-    pointer-events: none;
 }
 
 .command-input {
@@ -317,6 +318,7 @@ onMounted(() => {
     left: 0;
     top: 0;
     width: 100%;
+    height: 100%;
     background: transparent;
     border: none;
     outline: none;
@@ -325,6 +327,24 @@ onMounted(() => {
     font-family: 'Consolas', 'Courier New', monospace;
     padding: 0;
     caret-color: transparent;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    word-break: break-all;
+    line-height: 16px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.command-input::selection {
+    background: transparent;
+    color: transparent;
+}
+
+.command-input::-moz-selection {
+    background: transparent;
+    color: transparent;
 }
 
 .cursor {
@@ -333,7 +353,8 @@ onMounted(() => {
     height: 16px;
     background: #cccccc;
     pointer-events: none;
-    margin-left: -1px;
+    vertical-align: text-bottom;
+    margin-left: 1px;
 }
 
 .cursor.blink {
@@ -344,8 +365,6 @@ onMounted(() => {
     color: #666666;
     font-size: 14px;
     font-family: 'Consolas', 'Courier New', monospace;
-    white-space: pre;
-    pointer-events: none;
 }
 
 @keyframes blink {

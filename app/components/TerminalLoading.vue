@@ -152,7 +152,6 @@ onMounted(() => {
     word-wrap: break-word;
     display: flex;
     align-items: center;
-    gap: 4px;
 }
 
 .output {
@@ -176,7 +175,6 @@ onMounted(() => {
     width: 1px;
     height: 16px;
     background: #cccccc;
-    margin-left: 2px;
 }
 
 .cursor.blink {

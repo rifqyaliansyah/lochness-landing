@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, computed } from 'vue'
+import { ref, onMounted, nextTick, computed, watch, onBeforeUnmount } from 'vue'
 import { executeWindowsCommand, getAvailableCommands, isValidCommand } from '@/utils/commandExecutor'
 
 const currentCommand = ref('')
@@ -51,6 +51,7 @@ const isTyping = ref(false)
 const showWelcome = ref(true)
 const cursorPosition = ref(0)
 let typingTimer = null
+let focusInterval = null
 
 // Computed suggestions based on current input
 const suggestions = computed(() => {
@@ -78,6 +79,13 @@ const focusInput = () => {
         commandInput.value.focus()
     }
 }
+
+// Watch for visibility changes
+watch(() => document.visibilityState, (newVal) => {
+    if (newVal === 'visible') {
+        setTimeout(() => focusInput(), 100)
+    }
+})
 
 const updateCursorPosition = () => {
     if (commandInput.value) {
@@ -228,12 +236,35 @@ const close = () => {
 }
 
 onMounted(() => {
-    focusInput()
     showWelcome.value = true
+
+    // Multiple focus attempts dengan interval yang berbeda
+    focusInput()
+    setTimeout(() => focusInput(), 100)
+    setTimeout(() => focusInput(), 300)
+    setTimeout(() => focusInput(), 500)
+
+    // Set interval untuk retry focus setiap 2 detik (useful setelah loading)
+    focusInterval = setInterval(() => {
+        if (document.activeElement !== commandInput.value) {
+            focusInput()
+        }
+    }, 2000)
+})
+
+onBeforeUnmount(() => {
+    // Clear interval saat component di-unmount
+    if (focusInterval) {
+        clearInterval(focusInterval)
+    }
+    if (typingTimer) {
+        clearTimeout(typingTimer)
+    }
 })
 </script>
 
 <style scoped>
+/* Style tetap sama seperti sebelumnya */
 * {
     box-sizing: border-box;
 }

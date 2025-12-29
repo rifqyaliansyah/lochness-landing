@@ -82,7 +82,7 @@ Frontend:
    - URL: https://rifqyaliansyah.github.io/lochness-landing
 
 2. - Name: Kata-Ku
-   - Description: A simple platform to post and share words and quotes
+   - Description: A simple platform to post and share words
    - URL: https://github.com/rifqyaliansyah/qwerty-landing.git
 
 Backend:

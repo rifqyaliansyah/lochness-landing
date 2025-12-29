@@ -58,7 +58,7 @@ WHOAMI       Displays user information
         description: 'Learn more about me',
         execute: () => `Name: Rifqy
 
-Languages:
+Programming Languages:
 - Javascript
 - Python
 - PHP
@@ -77,21 +77,21 @@ Period: Jul 2025 - Dec 2025`
         description: 'View my projects and works',
         execute: () => `
 Frontend:
-1. - Name: Lochness Landing
-   - Description: Landing Page
+1. - Name: Lochness Terminal
+   - Description: Terminal Simulator for Portfolio
    - URL: https://rifqyaliansyah.github.io/lochness-landing
 
-2. - Name: Qwerty Landing
-   - Description: Landing Page
+2. - Name: Kata-Ku
+   - Description: A simple platform to post and share words and quotes
    - URL: https://github.com/rifqyaliansyah/qwerty-landing.git
 
 Backend:
 1. - Name: Qwerty API
-   - Description: API for Qwerty Landing
+   - Description: API service for managing posts and data in Kata-Ku.
    - URL: https://github.com/rifqyaliansyah/qwerty-api.git
 
-2. - Name: OVA Downloader
-   - Description: Downloader
+2. - Name: OVA Downloader API
+   - Description: A web-based downloader for YouTube, Instagram, TikTok, and more.
    - URL: https://github.com/rifqyaliansyah/ova-downloader.git
 `
     },
@@ -99,9 +99,9 @@ Backend:
     contact: {
         description: 'Get in touch with me',
         execute: () => `Get in touch with me!
-        
+
 Github: https://github.com/rifqyaliansyah
-Linkedin: https://www.linkedin.com
+Linkedin: https://www.linkedin.com/in/rifqy-aliansyah/
 Instagram: https://www.instagram.com/rifqyaliansyah
 Email: rifqyaliansyah1877@gmail.com`
     },

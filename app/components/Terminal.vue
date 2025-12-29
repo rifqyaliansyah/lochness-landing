@@ -23,8 +23,10 @@
                 <span class="prompt">C:\Users\rifqy&gt;</span>
                 <span class="input-wrapper">
                     <span class="input-display">{{ currentCommand }}</span>
+                    <span v-if="suggestion" class="suggestion">{{ suggestion }}</span>
                     <input v-model="currentCommand" @keydown.enter="executeCommand" @keydown.up="navigateHistory(-1)"
-                        @keydown.down="navigateHistory(1)" @input="handleInput" ref="commandInput" type="text"
+                        @keydown.down="navigateHistory(1)" @keydown.tab.prevent="autocomplete"
+                        @keydown.right="acceptSuggestion" @input="handleInput" ref="commandInput" type="text"
                         class="command-input" spellcheck="false" autocomplete="off" />
                     <span class="cursor" :class="{ blink: !isTyping }"></span>
                 </span>
@@ -34,7 +36,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, computed } from 'vue'
+import { executeWindowsCommand, getAvailableCommands, isValidCommand } from '@/utils/commandExecutor'
 
 const currentCommand = ref('')
 const commandHistory = ref([])
@@ -43,6 +46,27 @@ const commandInput = ref(null)
 const terminalContent = ref(null)
 const isTyping = ref(false)
 let typingTimer = null
+
+// Computed suggestions based on current input
+const suggestions = computed(() => {
+    const cmd = currentCommand.value.toLowerCase().trim()
+    if (!cmd) return []
+
+    const availableCommands = getAvailableCommands()
+    return availableCommands.filter(c => c.startsWith(cmd) && c !== cmd)
+})
+
+// Ghost text suggestion (first match)
+const suggestion = computed(() => {
+    const cmd = currentCommand.value.toLowerCase().trim()
+    if (!cmd) return ''
+
+    const match = suggestions.value[0]
+    if (match) {
+        return match.substring(cmd.length)
+    }
+    return ''
+})
 
 const focusInput = () => {
     if (commandInput.value) {
@@ -65,49 +89,37 @@ const handleInput = () => {
     }, 500)
 }
 
+// Accept ghost suggestion with right arrow key
+const acceptSuggestion = () => {
+    if (suggestion.value) {
+        currentCommand.value = currentCommand.value + suggestion.value
+    }
+}
+
 const executeCommand = () => {
     const cmd = currentCommand.value.trim()
 
     if (cmd) {
-        let output = ''
+        // Execute command menggunakan utils
+        const result = executeWindowsCommand(cmd)
 
-        if (cmd.toLowerCase() === 'dir') {
-            output = `Volume in drive C has no label.
- Volume Serial Number is 1234-5678
-
- Directory of C:\\Users\\rifqv
-
-12/28/2025  10:22 PM    <DIR>          .
-12/28/2025  10:22 PM    <DIR>          ..
-12/28/2025  10:22 PM    <DIR>          Documents
-12/28/2025  10:22 PM    <DIR>          Downloads
-               0 File(s)              0 bytes
-               4 Dir(s)  100,000,000,000 bytes free`
-        } else if (cmd.toLowerCase() === 'help') {
-            output = `For more information on a specific command, type HELP command-name
-DIR     Displays a list of files and subdirectories in a directory.
-CLS     Clears the screen.
-EXIT    Quits the CMD.EXE program (command interpreter).
-ECHO    Displays messages, or turns command echoing on or off.`
-        } else if (cmd.toLowerCase() === 'cls') {
+        // Check apakah command adalah CLS (clear screen)
+        if (typeof result === 'object' && result.clear) {
             commandHistory.value = []
             currentCommand.value = ''
             return
-        } else if (cmd.toLowerCase() === 'exit') {
-            output = 'Exiting...'
-        } else {
-            output = `'${cmd}' is not recognized as an internal or external command,
-operable program or batch file.`
         }
 
+        // Add ke history
         commandHistory.value.push({
             command: cmd,
-            output: output
+            output: result
         })
 
         currentCommand.value = ''
         historyIndex.value = -1
 
+        // Scroll ke bawah
         nextTick(() => {
             if (terminalContent.value) {
                 terminalContent.value.scrollTop = terminalContent.value.scrollHeight
@@ -129,6 +141,31 @@ const navigateHistory = (direction) => {
         } else {
             currentCommand.value = commandHistory.value[commandHistory.value.length - 1 - newIndex].command
         }
+    }
+}
+
+// Autocomplete feature
+const autocomplete = () => {
+    const cmd = currentCommand.value.toLowerCase().trim()
+    if (!cmd) return
+
+    const availableCommands = getAvailableCommands()
+    const matches = availableCommands.filter(c => c.startsWith(cmd))
+
+    if (matches.length === 1) {
+        // Autocomplete ke satu-satunya match
+        currentCommand.value = matches[0]
+    } else if (matches.length > 1) {
+        // Show all matches di terminal output
+        commandHistory.value.push({
+            command: currentCommand.value,
+            output: matches.join('  ')
+        })
+        nextTick(() => {
+            if (terminalContent.value) {
+                terminalContent.value.scrollTop = terminalContent.value.scrollHeight
+            }
+        })
     }
 }
 
@@ -274,6 +311,14 @@ onMounted(() => {
     animation: blink 1s step-end infinite;
 }
 
+.suggestion {
+    color: #666666;
+    font-size: 14px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    white-space: pre;
+    pointer-events: none;
+}
+
 @keyframes blink {
 
     0%,
@@ -292,7 +337,6 @@ onMounted(() => {
     .terminal-window {
         height: 100vh;
         height: 100dvh;
-        /* Dynamic viewport height for mobile browsers */
         max-width: 100%;
         margin: 0;
         border-radius: 8px;

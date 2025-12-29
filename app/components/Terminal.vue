@@ -1,0 +1,292 @@
+<template>
+    <div class="terminal-window" @click="focusInput">
+        <!-- Import Title Bar Component -->
+        <TitleBar @minimize="minimize" @maximize="maximize" @close="close" />
+
+        <!-- Terminal Content -->
+        <div class="terminal-content" ref="terminalContent">
+            <div class="terminal-output">
+                <div class="output-line">Microsoft Windows [Version 10.0.26200.7462]</div>
+                <div class="output-line">(c) Microsoft Corporation. All rights reserved.</div>
+                <div class="output-line">&nbsp;</div>
+
+                <div v-for="(line, index) in commandHistory" :key="index" class="output-line">
+                    <div class="prompt-line">
+                        <span class="prompt">C:\Users\rifqy&gt;</span>
+                        <span class="command">{{ line.command }}</span>
+                    </div>
+                    <div v-if="line.output" class="command-output">{{ line.output }}</div>
+                </div>
+            </div>
+
+            <div class="input-line">
+                <span class="prompt">C:\Users\rifqy&gt;</span>
+                <span class="input-wrapper">
+                    <span class="input-display">{{ currentCommand }}</span>
+                    <input v-model="currentCommand" @keydown.enter="executeCommand" @keydown.up="navigateHistory(-1)"
+                        @keydown.down="navigateHistory(1)" @input="handleInput" ref="commandInput" type="text"
+                        class="command-input" spellcheck="false" autocomplete="off" />
+                    <span class="cursor" :class="{ blink: !isTyping }"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import { ref, onMounted, nextTick } from 'vue'
+
+const currentCommand = ref('')
+const commandHistory = ref([])
+const historyIndex = ref(-1)
+const commandInput = ref(null)
+const terminalContent = ref(null)
+const isTyping = ref(false)
+let typingTimer = null
+
+const focusInput = () => {
+    if (commandInput.value) {
+        commandInput.value.focus()
+    }
+}
+
+const handleInput = () => {
+    // Set typing state
+    isTyping.value = true
+
+    // Clear previous timer
+    if (typingTimer) {
+        clearTimeout(typingTimer)
+    }
+
+    // Set timer to stop typing state after 500ms of no input
+    typingTimer = setTimeout(() => {
+        isTyping.value = false
+    }, 500)
+}
+
+const executeCommand = () => {
+    const cmd = currentCommand.value.trim()
+
+    if (cmd) {
+        let output = ''
+
+        if (cmd.toLowerCase() === 'dir') {
+            output = `Volume in drive C has no label.
+ Volume Serial Number is 1234-5678
+
+ Directory of C:\\Users\\rifqv
+
+12/28/2025  10:22 PM    <DIR>          .
+12/28/2025  10:22 PM    <DIR>          ..
+12/28/2025  10:22 PM    <DIR>          Documents
+12/28/2025  10:22 PM    <DIR>          Downloads
+               0 File(s)              0 bytes
+               4 Dir(s)  100,000,000,000 bytes free`
+        } else if (cmd.toLowerCase() === 'help') {
+            output = `For more information on a specific command, type HELP command-name
+DIR     Displays a list of files and subdirectories in a directory.
+CLS     Clears the screen.
+EXIT    Quits the CMD.EXE program (command interpreter).
+ECHO    Displays messages, or turns command echoing on or off.`
+        } else if (cmd.toLowerCase() === 'cls') {
+            commandHistory.value = []
+            currentCommand.value = ''
+            return
+        } else if (cmd.toLowerCase() === 'exit') {
+            output = 'Exiting...'
+        } else {
+            output = `'${cmd}' is not recognized as an internal or external command,
+operable program or batch file.`
+        }
+
+        commandHistory.value.push({
+            command: cmd,
+            output: output
+        })
+
+        currentCommand.value = ''
+        historyIndex.value = -1
+
+        nextTick(() => {
+            if (terminalContent.value) {
+                terminalContent.value.scrollTop = terminalContent.value.scrollHeight
+            }
+        })
+    }
+}
+
+const navigateHistory = (direction) => {
+    if (commandHistory.value.length === 0) return
+
+    const newIndex = historyIndex.value + direction
+
+    if (newIndex >= -1 && newIndex < commandHistory.value.length) {
+        historyIndex.value = newIndex
+
+        if (newIndex === -1) {
+            currentCommand.value = ''
+        } else {
+            currentCommand.value = commandHistory.value[commandHistory.value.length - 1 - newIndex].command
+        }
+    }
+}
+
+const minimize = () => {
+    console.log('Minimize clicked')
+}
+
+const maximize = () => {
+    console.log('Maximize clicked')
+}
+
+const close = () => {
+    console.log('Close clicked')
+}
+
+onMounted(() => {
+    focusInput()
+})
+</script>
+
+<style scoped>
+* {
+    box-sizing: border-box;
+}
+
+.terminal-window {
+    width: 100%;
+    max-width: 1050px;
+    height: 567px;
+    margin: 0 auto;
+    background: #0c0c0c;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    font-family: 'Consolas', 'Courier New', monospace;
+}
+
+.terminal-content {
+    flex: 1;
+    background: #0c0c0c;
+    padding: 16px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    color: #cccccc;
+    font-size: 14px;
+    /* line-height: 0; */
+    font-family: 'Consolas', 'Courier New', monospace;
+    cursor: text;
+}
+
+.terminal-content::-webkit-scrollbar {
+    width: 12px;
+}
+
+.terminal-content::-webkit-scrollbar-track {
+    background: #0c0c0c;
+}
+
+.terminal-content::-webkit-scrollbar-thumb {
+    background: #3a3a3a;
+    border-radius: 6px;
+    border: 2px solid #0c0c0c;
+}
+
+.terminal-content::-webkit-scrollbar-thumb:hover {
+    background: #4a4a4a;
+}
+
+.output-line {
+    /* margin-bottom: 2px; */
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.prompt-line {
+    display: flex;
+    gap: 4px;
+}
+
+.prompt {
+    color: #cccccc;
+    white-space: nowrap;
+}
+
+.command {
+    color: #cccccc;
+}
+
+.command-output {
+    margin-left: 0;
+    margin-top: 2px;
+    margin-bottom: 8px;
+    color: #cccccc;
+    white-space: pre-wrap;
+}
+
+.input-line {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    /* margin-top: 8px; */
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.input-display {
+    color: #cccccc;
+    font-size: 14px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    white-space: pre;
+    pointer-events: none;
+}
+
+.command-input {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: transparent;
+    font-size: 14px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    padding: 0;
+    caret-color: transparent;
+}
+
+.cursor {
+    display: inline-block;
+    width: 1px;
+    height: 16px;
+    background: #cccccc;
+    pointer-events: none;
+    margin-left: -1px;
+}
+
+.cursor.blink {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    49% {
+        opacity: 1;
+    }
+
+    50%,
+    100% {
+        opacity: 0;
+    }
+}
+</style>

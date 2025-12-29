@@ -7,56 +7,119 @@
 
 // Database command yang tersedia
 const commands = {
-    dir: {
-        description: 'Displays a list of files and subdirectories',
-        execute: () => `Volume in drive C has no label.
- Volume Serial Number is 1234-5678
+//     dir: {
+//         description: 'Displays a list of files and subdirectories',
+//         execute: () => `Volume in drive C has no label.
+//  Volume Serial Number is 1234-5678
 
- Directory of C:\\Users\\rifqy
+//  Directory of C:\\Users\\rifqy
 
-12/28/2025  10:22 PM    <DIR>          .
-12/28/2025  10:22 PM    <DIR>          ..
-12/28/2025  10:22 PM    <DIR>          Documents
-12/28/2025  10:22 PM    <DIR>          Downloads
-12/28/2025  10:22 PM    <DIR>          Pictures
-12/28/2025  10:22 PM    <DIR>          Desktop
-12/28/2025  09:15 AM           142,336 resume.pdf
-12/28/2025  03:42 PM             2,048 notes.txt
-               2 File(s)        144,384 bytes
-               6 Dir(s)  100,000,000,000 bytes free`
+// 12/28/2025  10:22 PM    <DIR>          .
+// 12/28/2025  10:22 PM    <DIR>          ..
+// 12/28/2025  10:22 PM    <DIR>          Documents
+// 12/28/2025  10:22 PM    <DIR>          Downloads
+// 12/28/2025  10:22 PM    <DIR>          Pictures
+// 12/28/2025  10:22 PM    <DIR>          Desktop
+// 12/28/2025  09:15 AM           142,336 resume.pdf
+// 12/28/2025  03:42 PM             2,048 notes.txt
+//                2 File(s)        144,384 bytes
+//                6 Dir(s)  100,000,000,000 bytes free`
+//     },
+
+help: {
+    description: 'Provides help information for available commands',
+    execute: () => `Available Commands:
+
+NAVIGATION:
+HOME         Return to home page
+ABOUT        Learn more about me
+PROJECT      View my projects and works
+CONTACT      Get in touch with me
+
+SYSTEM:
+HELP         Displays this help information
+CLEAR        Clears the screen
+
+UTILITIES:
+ECHO         Displays messages
+DATE         Displays the current date
+TIME         Displays the current time
+VER          Displays system version
+WHOAMI       Displays user information
+`
+  },
+
+    home: {
+        description: 'Returns to the home page',
+        execute: () => `Hello, welcome to my portfolio website. Type "help" to get started!`
     },
 
-    help: {
-        description: 'Provides help information for Windows commands',
-        execute: () => `For more information on a specific command, type HELP command-name
+    about: {
+        description: 'Learn more about me',
+        execute: () => `Name: Rifqy
 
-Available Commands:
-DIR       Displays a list of files and subdirectories in a directory.
-CLS       Clears the screen.
-EXIT      Quits the CMD.EXE program (command interpreter).
-ECHO      Displays messages, or turns command echoing on or off.
-DATE      Displays or sets the date.
-TIME      Displays or sets the system time.
-VER       Displays the Windows version.
-IPCONFIG  Displays network configuration.
-WHOAMI    Displays current user information.
-TREE      Displays directory structure in tree format.`
+Languages:
+- Javascript
+- Python
+- PHP
+
+Hobbies:
+- Listen Music
+- Play Games
+
+Work Experience:
+Company: Alkademi
+Role: Internship
+Period: Jul 2025 - Dec 2025`
     },
 
-    cls: {
+    project : {
+        description: 'View my projects and works',
+        execute: () => `
+Frontend:
+1. - Name: Lochness Landing
+   - Description: Landing Page
+   - URL: https://rifqyaliansyah.github.io/lochness-landing
+
+2. - Name: Qwerty Landing
+   - Description: Landing Page
+   - URL: https://github.com/rifqyaliansyah/qwerty-landing.git
+
+Backend:
+1. - Name: Qwerty API
+   - Description: API for Qwerty Landing
+   - URL: https://github.com/rifqyaliansyah/qwerty-api.git
+
+2. - Name: OVA Downloader
+   - Description: Downloader
+   - URL: https://github.com/rifqyaliansyah/ova-downloader.git
+`
+    },
+
+    contact: {
+        description: 'Get in touch with me',
+        execute: () => `Get in touch with me!
+        
+Github: https://github.com/rifqyaliansyah
+Linkedin: https://www.linkedin.com
+Instagram: https://www.instagram.com/rifqyaliansyah
+Email: rifqyaliansyah1877@gmail.com`
+    },
+
+    // cls: {
+    //     description: 'Clears the screen',
+    //     execute: () => ({ clear: true })
+    // },
+
+    clear: {
         description: 'Clears the screen',
         execute: () => ({ clear: true })
     },
 
-    clear: {
-        description: 'Clears the screen (alias for CLS)',
-        execute: () => ({ clear: true })
-    },
-
-    exit: {
-        description: 'Exits the command interpreter',
-        execute: () => 'Exiting...'
-    },
+    // exit: {
+    //     description: 'Exits the command interpreter',
+    //     execute: () => 'Exiting...'
+    // },
 
     echo: {
         description: 'Displays messages',
@@ -99,87 +162,87 @@ TREE      Displays directory structure in tree format.`
         execute: () => `Microsoft Windows [Version 10.0.26200.7462]`
     },
 
-    ipconfig: {
-        description: 'Displays network configuration',
-        execute: () => `Windows IP Configuration
+//     ipconfig: {
+//         description: 'Displays network configuration',
+//         execute: () => `Windows IP Configuration
 
-Ethernet adapter Ethernet:
+// Ethernet adapter Ethernet:
 
-   Connection-specific DNS Suffix  . : 
-   IPv4 Address. . . . . . . . . . . : 192.168.1.100
-   Subnet Mask . . . . . . . . . . . : 255.255.255.0
-   Default Gateway . . . . . . . . . : 192.168.1.1`
-    },
+//    Connection-specific DNS Suffix  . : 
+//    IPv4 Address. . . . . . . . . . . : 192.168.1.100
+//    Subnet Mask . . . . . . . . . . . : 255.255.255.0
+//    Default Gateway . . . . . . . . . : 192.168.1.1`
+//     },
 
     whoami: {
         description: 'Displays current user information',
         execute: () => `DESKTOP-PC\\rifqy`
     },
 
-    tree: {
-        description: 'Displays directory structure',
-        execute: () => `Folder PATH listing
-Volume serial number is 1234-5678
-C:.
-├───Documents
-│   ├───Work
-│   └───Personal
-├───Downloads
-├───Pictures
-│   └───Vacation
-└───Desktop
-    └───Projects`
-    },
+//     tree: {
+//         description: 'Displays directory structure',
+//         execute: () => `Folder PATH listing
+// Volume serial number is 1234-5678
+// C:.
+// ├───Documents
+// │   ├───Work
+// │   └───Personal
+// ├───Downloads
+// ├───Pictures
+// │   └───Vacation
+// └───Desktop
+//     └───Projects`
+//     },
 
-    color: {
-        description: 'Changes console colors (simulation)',
-        execute: (args) => {
-            if (!args || args.length === 0) {
-                return 'Sets the default console foreground and background colors.\n\nCOLOR [attr]\n\n  attr        Specifies color attribute of console output'
-            }
-            return `Color changed to: ${args[0]}`
-        }
-    },
+    // color: {
+    //     description: 'Changes console colors (simulation)',
+    //     execute: (args) => {
+    //         if (!args || args.length === 0) {
+    //             return 'Sets the default console foreground and background colors.\n\nCOLOR [attr]\n\n  attr        Specifies color attribute of console output'
+    //         }
+    //         return `Color changed to: ${args[0]}`
+    //     }
+    // },
 
-    title: {
-        description: 'Sets the window title',
-        execute: (args) => {
-            if (!args || args.length === 0) {
-                return 'Sets the window title for the command prompt window.\n\nTITLE [string]'
-            }
-            return `Title set to: ${args.join(' ')}`
-        }
-    },
+    // title: {
+    //     description: 'Sets the window title',
+    //     execute: (args) => {
+    //         if (!args || args.length === 0) {
+    //             return 'Sets the window title for the command prompt window.\n\nTITLE [string]'
+    //         }
+    //         return `Title set to: ${args.join(' ')}`
+    //     }
+    // },
 
-    ping: {
-        description: 'Sends ICMP echo requests',
-        execute: (args) => {
-            const target = args && args.length > 0 ? args[0] : 'example.com'
-            return `Pinging ${target} [93.184.216.34] with 32 bytes of data:
+//     ping: {
+//         description: 'Sends ICMP echo requests',
+//         execute: (args) => {
+//             const target = args && args.length > 0 ? args[0] : 'example.com'
+//             return `Pinging ${target} [93.184.216.34] with 32 bytes of data:
 
-Reply from 93.184.216.34: bytes=32 time=12ms TTL=56
-Reply from 93.184.216.34: bytes=32 time=11ms TTL=56
-Reply from 93.184.216.34: bytes=32 time=13ms TTL=56
-Reply from 93.184.216.34: bytes=32 time=12ms TTL=56
+// Reply from 93.184.216.34: bytes=32 time=12ms TTL=56
+// Reply from 93.184.216.34: bytes=32 time=11ms TTL=56
+// Reply from 93.184.216.34: bytes=32 time=13ms TTL=56
+// Reply from 93.184.216.34: bytes=32 time=12ms TTL=56
 
-Ping statistics for 93.184.216.34:
-    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
-Approximate round trip times in milli-seconds:
-    Minimum = 11ms, Maximum = 13ms, Average = 12ms`
-        }
-    },
+// Ping statistics for 93.184.216.34:
+//     Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+// Approximate round trip times in milli-seconds:
+//     Minimum = 11ms, Maximum = 13ms, Average = 12ms`
+//         }
+//     },
 
-    systeminfo: {
-        description: 'Displays detailed configuration information',
-        execute: () => `Host Name:                 DESKTOP-PC
-OS Name:                   Microsoft Windows 10 Pro
-OS Version:                10.0.26200 Build 26200
-System Manufacturer:       Custom Build
-System Model:              AMD Ryzen 9
-Processor:                 AMD Ryzen 9 5900X
-Total Physical Memory:     32,768 MB
-Available Physical Memory: 16,384 MB`
-    }
+//     systeminfo: {
+//         description: 'Displays detailed configuration information',
+//         execute: () => `Host Name:                 DESKTOP-PC
+// OS Name:                   Microsoft Windows 10 Pro
+// OS Version:                10.0.26200 Build 26200
+// System Manufacturer:       Custom Build
+// System Model:              AMD Ryzen 9
+// Processor:                 AMD Ryzen 9 5900X
+// Total Physical Memory:     32,768 MB
+// Available Physical Memory: 16,384 MB`
+//     }
 }
 
 /**

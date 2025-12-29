@@ -173,7 +173,7 @@ onMounted(() => {
 
 .cursor {
     display: inline-block;
-    width: 8px;
+    width: 1px;
     height: 16px;
     background: #cccccc;
     margin-left: 2px;

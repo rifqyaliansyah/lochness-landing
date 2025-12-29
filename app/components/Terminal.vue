@@ -6,16 +6,16 @@
         <!-- Terminal Content -->
         <div class="terminal-content" ref="terminalContent">
             <div class="terminal-output">
-                <div class="output-line">Microsoft Windows [Version 10.0.26200.7462]</div>
-                <div class="output-line">(c) Microsoft Corporation. All rights reserved.</div>
-                <div class="output-line">&nbsp;</div>
+                <div v-if="showWelcome" class="output-line">Microsoft Windows [Version 10.0.26200.7462]</div>
+                <div v-if="showWelcome" class="output-line">(c) Microsoft Corporation. All rights reserved.</div>
+                <div v-if="showWelcome" class="output-line">&nbsp;</div>
 
                 <div v-for="(line, index) in commandHistory" :key="index" class="output-line">
                     <div class="prompt-line">
                         <span class="prompt">C:\Users\rifqy&gt;</span>
                         <span class="command">{{ line.command }}</span>
                     </div>
-                    <div v-if="line.output" class="command-output">{{ line.output }}</div>
+                    <div v-if="line.output" class="command-output" v-html="formatOutput(line.output)"></div>
                 </div>
             </div>
 
@@ -45,6 +45,7 @@ const historyIndex = ref(-1)
 const commandInput = ref(null)
 const terminalContent = ref(null)
 const isTyping = ref(false)
+const showWelcome = ref(true)
 let typingTimer = null
 
 // Computed suggestions based on current input
@@ -96,6 +97,31 @@ const acceptSuggestion = () => {
     }
 }
 
+// Format output untuk convert URL jadi clickable link
+const formatOutput = (text) => {
+    if (!text) return ''
+
+    // Regex untuk detect email
+    const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/g
+
+    // Regex untuk detect URL (http, https, www)
+    const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/g
+
+    // Replace email dengan mailto link
+    let formatted = text.replace(emailRegex, (email) => {
+        return `<a href="mailto:${email}" class="terminal-link">${email}</a>`
+    })
+
+    // Replace URL dengan link tag
+    formatted = formatted.replace(urlRegex, (url) => {
+        // Tambah https:// kalau mulai dengan www.
+        const href = url.startsWith('www.') ? `https://${url}` : url
+        return `<a href="${href}" target="_blank" class="terminal-link">${url}</a>`
+    })
+
+    return formatted
+}
+
 const executeCommand = () => {
     const cmd = currentCommand.value.trim()
 
@@ -106,6 +132,7 @@ const executeCommand = () => {
         // Check apakah command adalah CLS (clear screen)
         if (typeof result === 'object' && result.clear) {
             commandHistory.value = []
+            showWelcome.value = false
             currentCommand.value = ''
             return
         }
@@ -183,6 +210,8 @@ const close = () => {
 
 onMounted(() => {
     focusInput()
+    // Reset welcome message on mount (pas refresh)
+    showWelcome.value = true
 })
 </script>
 

@@ -166,4 +166,139 @@ defineEmits(['minimize', 'maximize', 'close'])
     background: #c42b1c;
     color: white;
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .title-bar {
+        height: 40px;
+        padding: 6px 0 0 0;
+    }
+
+    .title-bar-left {
+        height: 34px;
+        padding-left: 4px;
+    }
+
+    .active-tab {
+        gap: 6px;
+        padding: 0 8px;
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+    }
+
+    .terminal-icon {
+        width: 14px;
+        height: 14px;
+    }
+
+    .terminal-icon svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .title-text {
+        font-size: 11px;
+        margin-right: 12px;
+    }
+
+    .tab-control-btn {
+        width: 28px;
+        height: 24px;
+        font-size: 14px;
+    }
+
+    .tab-control-btn.close-tab {
+        font-size: 16px;
+    }
+
+    .tab-control-btn.new-tab {
+        font-size: 18px;
+        margin-left: 4px;
+    }
+
+    .separator {
+        height: 24px;
+    }
+
+    .title-bar-right {
+        height: 34px;
+        margin-bottom: 12px;
+    }
+
+    .title-btn {
+        width: 40px;
+        height: 40px;
+    }
+
+    .title-btn svg {
+        width: 10px;
+        height: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .title-bar {
+        height: 36px;
+        padding: 4px 0 0 0;
+    }
+
+    .title-bar-left {
+        height: 32px;
+        padding-left: 2px;
+    }
+
+    .active-tab {
+        gap: 4px;
+        padding: 0 6px;
+    }
+
+    .terminal-icon {
+        width: 12px;
+        height: 12px;
+    }
+
+    .terminal-icon svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    .title-text {
+        font-size: 10px;
+        margin-right: 8px;
+    }
+
+    .tab-control-btn {
+        width: 24px;
+        height: 20px;
+        font-size: 12px;
+    }
+
+    .tab-control-btn.close-tab {
+        font-size: 14px;
+    }
+
+    .tab-control-btn.new-tab {
+        font-size: 16px;
+        margin-left: 2px;
+    }
+
+    .separator {
+        height: 20px;
+    }
+
+    .title-bar-right {
+        height: 32px;
+        margin-bottom: 8px;
+    }
+
+    .title-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .title-btn svg {
+        width: 9px;
+        height: 9px;
+    }
+}
 </style>

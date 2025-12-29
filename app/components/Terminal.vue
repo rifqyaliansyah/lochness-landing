@@ -176,7 +176,6 @@ onMounted(() => {
     overflow-x: hidden;
     color: #cccccc;
     font-size: 14px;
-    /* line-height: 0; */
     font-family: 'Consolas', 'Courier New', monospace;
     cursor: text;
 }
@@ -200,7 +199,6 @@ onMounted(() => {
 }
 
 .output-line {
-    /* margin-bottom: 2px; */
     white-space: pre-wrap;
     word-wrap: break-word;
 }
@@ -231,7 +229,6 @@ onMounted(() => {
     display: flex;
     align-items: center;
     gap: 4px;
-    /* margin-top: 8px; */
 }
 
 .input-wrapper {
@@ -287,6 +284,47 @@ onMounted(() => {
     50%,
     100% {
         opacity: 0;
+    }
+}
+
+/* Mobile Responsive - Full Height */
+@media (max-width: 768px) {
+    .terminal-window {
+        height: 100vh;
+        height: 100dvh;
+        /* Dynamic viewport height for mobile browsers */
+        max-width: 100%;
+        margin: 0;
+        border-radius: 8px;
+    }
+
+    .terminal-content {
+        padding: 12px;
+        font-size: 13px;
+    }
+
+    .cursor {
+        height: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .terminal-content {
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    .input-display,
+    .command-input {
+        font-size: 12px;
+    }
+
+    .cursor {
+        height: 13px;
+    }
+
+    .terminal-content::-webkit-scrollbar {
+        width: 8px;
     }
 }
 </style>

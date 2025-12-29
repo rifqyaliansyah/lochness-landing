@@ -21,13 +21,16 @@
             <div class="input-line">
                 <span class="prompt">C:\Users\rifqy&gt;</span><span class="input-wrapper">
                     <span class="input-content">
-                        <span class="input-display">{{ currentCommand }}</span>
+                        <span class="input-display">{{ currentCommand.substring(0, cursorPosition) }}</span>
                         <span class="cursor" :class="{ blink: !isTyping }"></span>
-                        <span v-if="suggestion" class="suggestion">{{ suggestion }}</span>
+                        <span class="input-display">{{ currentCommand.substring(cursorPosition) }}</span>
+                        <span v-if="suggestion && cursorPosition === currentCommand.length" class="suggestion">{{
+                            suggestion }}</span>
                     </span>
                     <input v-model="currentCommand" @keydown.enter="executeCommand" @keydown.up="navigateHistory(-1)"
                         @keydown.down="navigateHistory(1)" @keydown.tab.prevent="autocomplete"
-                        @keydown.right="acceptSuggestion" @input="handleInput" ref="commandInput" type="text"
+                        @keydown.right="handleArrowRight" @keydown.left="updateCursorPosition" @input="handleInput"
+                        @click="updateCursorPosition" @keyup="updateCursorPosition" ref="commandInput" type="text"
                         class="command-input" spellcheck="false" autocomplete="off" />
                 </span>
             </div>
@@ -46,6 +49,7 @@ const commandInput = ref(null)
 const terminalContent = ref(null)
 const isTyping = ref(false)
 const showWelcome = ref(true)
+const cursorPosition = ref(0)
 let typingTimer = null
 
 // Computed suggestions based on current input
@@ -75,9 +79,18 @@ const focusInput = () => {
     }
 }
 
+const updateCursorPosition = () => {
+    if (commandInput.value) {
+        cursorPosition.value = commandInput.value.selectionStart
+    }
+}
+
 const handleInput = () => {
     // Set typing state
     isTyping.value = true
+
+    // Update cursor position
+    updateCursorPosition()
 
     // Clear previous timer
     if (typingTimer) {
@@ -91,30 +104,33 @@ const handleInput = () => {
 }
 
 // Accept ghost suggestion with right arrow key
-const acceptSuggestion = () => {
-    if (suggestion.value) {
+const handleArrowRight = (e) => {
+    if (suggestion.value && cursorPosition.value === currentCommand.value.length) {
+        e.preventDefault()
         currentCommand.value = currentCommand.value + suggestion.value
+        nextTick(() => {
+            cursorPosition.value = currentCommand.value.length
+        })
+    } else {
+        // Let default behavior happen, then update cursor
+        nextTick(() => {
+            updateCursorPosition()
+        })
     }
 }
 
-// Format output untuk convert URL jadi clickable link
 const formatOutput = (text) => {
     if (!text) return ''
 
-    // Regex untuk detect email
     const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/g
 
-    // Regex untuk detect URL (http, https, www)
     const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/g
 
-    // Replace email dengan mailto link
     let formatted = text.replace(emailRegex, (email) => {
         return `<a href="mailto:${email}" class="terminal-link">${email}</a>`
     })
 
-    // Replace URL dengan link tag
     formatted = formatted.replace(urlRegex, (url) => {
-        // Tambah https:// kalau mulai dengan www.
         const href = url.startsWith('www.') ? `https://${url}` : url
         return `<a href="${href}" target="_blank" class="terminal-link">${url}</a>`
     })
@@ -126,27 +142,25 @@ const executeCommand = () => {
     const cmd = currentCommand.value.trim()
 
     if (cmd) {
-        // Execute command menggunakan utils
         const result = executeWindowsCommand(cmd)
 
-        // Check apakah command adalah CLS (clear screen)
         if (typeof result === 'object' && result.clear) {
             commandHistory.value = []
             showWelcome.value = false
             currentCommand.value = ''
+            cursorPosition.value = 0
             return
         }
 
-        // Add ke history
         commandHistory.value.push({
             command: cmd,
             output: result
         })
 
         currentCommand.value = ''
+        cursorPosition.value = 0
         historyIndex.value = -1
 
-        // Scroll ke bawah
         nextTick(() => {
             if (terminalContent.value) {
                 terminalContent.value.scrollTop = terminalContent.value.scrollHeight
@@ -165,8 +179,12 @@ const navigateHistory = (direction) => {
 
         if (newIndex === -1) {
             currentCommand.value = ''
+            cursorPosition.value = 0
         } else {
             currentCommand.value = commandHistory.value[commandHistory.value.length - 1 - newIndex].command
+            nextTick(() => {
+                cursorPosition.value = currentCommand.value.length
+            })
         }
     }
 }
@@ -180,10 +198,11 @@ const autocomplete = () => {
     const matches = availableCommands.filter(c => c.startsWith(cmd))
 
     if (matches.length === 1) {
-        // Autocomplete ke satu-satunya match
         currentCommand.value = matches[0]
+        nextTick(() => {
+            cursorPosition.value = currentCommand.value.length
+        })
     } else if (matches.length > 1) {
-        // Show all matches di terminal output
         commandHistory.value.push({
             command: currentCommand.value,
             output: matches.join('  ')
@@ -210,7 +229,6 @@ const close = () => {
 
 onMounted(() => {
     focusInput()
-    // Reset welcome message on mount (pas refresh)
     showWelcome.value = true
 })
 </script>
@@ -354,7 +372,6 @@ onMounted(() => {
     background: #cccccc;
     pointer-events: none;
     vertical-align: text-bottom;
-    margin-left: 1px;
 }
 
 .cursor.blink {
